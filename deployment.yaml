@@ -14,9 +14,28 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: paoulo/csy3056-flask-app
+        image: paoulo/csy3056-flask-app:latest
         ports:
         - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 15
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
 ---
 apiVersion: v1
 kind: Service
@@ -26,7 +45,7 @@ spec:
   selector:
     app: flask-app
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 5000
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
   type: LoadBalancer

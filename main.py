@@ -1,20 +1,14 @@
-from flask import Flask, jsonify, request
+from flask import Flask
 
 app = Flask(__name__)
 
 @app.route('/')
-def index():
-    return jsonify(message="Welcome to the CSY3056 Flask App!")
+def home():
+    return "Hello, World! This is a CI/CD Test App."
 
-@app.route('/greet/<name>', methods=['GET'])
-def greet(name):
-    return jsonify(message=f"Hello, {name}!")
+@app.route('/health')
+def health():
+    return "OK", 200
 
-@app.route('/add', methods=['POST'])
-def add():
-    data = request.get_json()
-    total = data.get('a', 0) + data.get('b', 0)
-    return jsonify(result=total)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)

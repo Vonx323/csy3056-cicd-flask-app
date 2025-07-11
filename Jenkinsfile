@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/vonx323/csy3056-cicd-flask-app.git'
+                checkout scm
             }
         }
         stage('Install Dependencies') {
@@ -15,23 +15,30 @@ pipeline {
                 sh 'pip install -r requirements.txt'
             }
         }
-        stage('Run Tests') {
+        stage('Lint') {
             steps {
-                sh 'pytest tests/'
+                sh 'flake8 app'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'pytest tests/ --cov=app'
             }
         }
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(IMAGE_NAME)
+                    def commit = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    docker.build("${IMAGE_NAME}:${commit}")
                 }
             }
         }
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry(credentialsId: REGISTRY_CREDENTIALS, url: '') {
+                withDockerRegistry(credentialsId: REGISTRY_CREDENTIALS) {
                     script {
-                        docker.image(IMAGE_NAME).push()
+                        def commit = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                        docker.image("${IMAGE_NAME}:${commit}").push()
                     }
                 }
             }
@@ -39,7 +46,14 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh 'kubectl apply -f k8s/deployment.yaml'
+                sh 'kubectl rollout status deployment/flask-app'
             }
+        }
+    }
+    post {
+        always {
+            junit 'pytest-report.xml'
+            archiveArtifacts artifacts: 'coverage.xml', allowEmptyArchive: true
         }
     }
 }
