@@ -1,82 +1,87 @@
-# CSY3056 Flask CI/CD Project
+CSY3056 - CI/CD Pipeline for Flask Web Application
 
+Project Overview
 
+This project demonstrates a full DevOps pipeline for a Flask-based web application. It includes code development, automated testing, Docker containerization, and Kubernetes deployment through a Jenkins-managed CI/CD pipeline.
 
-## 📌 Features
+Features
 
-- RESTful Flask web service
-- Unit testing using pytest
-- CI/CD pipeline with Jenkins
-- Docker-based containerization
-- Kubernetes-based deployment with LoadBalancer service
+Simple Python Flask web service
 
-## 🗂 Project Structure
+Unit testing with pytest
 
-```
+Code linting with flake8
+
+Docker container with slim Python base
+
+CI/CD with Jenkins pipeline
+
+Kubernetes deployment with health checks and resource limits
+
+File Structure
+
 .
 ├── app/
-│   └── main.py
+│   └── main.py              # Flask application code
 ├── tests/
-│   └── test_main.py
-├── k8s/
-│   └── deployment.yaml
-├── requirements.txt
-├── Dockerfile
-└── Jenkinsfile
-```
+│   └── test_main.py         # Unit tests for Flask app
+├── Dockerfile               # Docker build instructions
+├── Jenkinsfile              # Jenkins pipeline definition
+├── requirements.txt         # Python dependencies
+└── k8s/
+    └── deployment.yaml      # Kubernetes deployment manifest
 
-## 🚀 Getting Started
+Prerequisites
 
-### Clone and Setup
+Python 3.10+
 
-```bash
-git clone https://github.com/vonx323/csy3056-cicd-flask-app.git
-cd csy3056-cicd-flask-app
+Docker
+
+Jenkins (with Docker and Git)
+
+Kubernetes cluster (e.g., Minikube or cloud provider)
+
+Running Locally
+
+# Set up environment
 python -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
-```
 
-### Run the Flask App
-
-```bash
+# Run the Flask app
 python app/main.py
-```
 
-### Run Tests
+Visit: http://localhost:5000
 
-```bash
-pytest tests/
-```
+Run Tests
 
-### Build and Run with Docker
+pytest tests/ --cov=app
 
-```bash
-docker build -t csy3056-flask-app .
-docker run -p 5000:5000 csy3056-flask-app
-```
+Docker Commands
 
-### Kubernetes Deployment
+# Build Docker image
+docker build -t flask_app_image .
 
-```bash
+# Run container
+docker run -d -p 5000:5000 flask_app_image
+
+CI/CD Pipeline
+
+Triggered via Jenkins on source code changes.
+
+Lint, test, build Docker image, push to DockerHub.
+
+Kubernetes deployment using kubectl apply.
+
+Kubernetes Deployment
+
 kubectl apply -f k8s/deployment.yaml
-```
+kubectl get pods
+kubectl get svc
 
-## 🛠 CI/CD Workflow
+Health check endpoint: /health
 
-The Jenkins pipeline includes:
-1. GitHub code checkout
-2. Dependency installation
-3. Unit testing via pytest
-4. Docker image build
-5. Image push to Docker Hub
-6. Deployment to Kubernetes
+Maintainer
 
-## 👤 Author
+Paoulo AgkoStudent ID: 21418507
 
-- **Paoulo**
-- CSY3056 - University of Northampton
-
-## 📜 License
-
-For educational use only.
